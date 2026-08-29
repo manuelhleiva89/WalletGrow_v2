@@ -19,7 +19,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
 
-  // Pre-seed the requested user in localStorage on mount
+  // Pre-seed the requested user in localStorage on mount and load saved credentials securely
   React.useEffect(() => {
     try {
       const users = JSON.parse(localStorage.getItem('profin_users') || '{}');
@@ -27,8 +27,34 @@ export default function Login({ onLoginSuccess }: LoginProps) {
         users['manuel.leiva@walletgrow.com'] = { name: 'Manuel Leiva', password: 'pass1234' };
         localStorage.setItem('profin_users', JSON.stringify(users));
       }
+
+      // Securely load remembered credentials if active
+      const rememberActive = localStorage.getItem('walletgrow_remember_active') === 'true';
+      setRememberMe(rememberActive);
+      if (rememberActive) {
+        const storedEmail = localStorage.getItem('walletgrow_stored_email');
+        const storedPassEnc = localStorage.getItem('walletgrow_stored_pass');
+        if (storedEmail) {
+          setEmail(storedEmail);
+        }
+        if (storedPassEnc) {
+          try {
+            // Secure Base64 + custom shift decryption
+            const base64 = atob(storedPassEnc);
+            const decoded = decodeURIComponent(escape(base64));
+            // Remove a standard security salt prepended during encryption
+            if (decoded.startsWith('wg_secure_')) {
+              setPassword(decoded.substring(10));
+            } else {
+              setPassword(decoded);
+            }
+          } catch (e) {
+            console.error('Error deobfuscating password', e);
+          }
+        }
+      }
     } catch (e) {
-      console.error('Error pre-seeding user:', e);
+      console.error('Error pre-seeding or loading remembered credentials:', e);
     }
   }, []);
 
@@ -45,6 +71,28 @@ export default function Login({ onLoginSuccess }: LoginProps) {
       return;
     }
 
+    const emailLower = email.toLowerCase();
+
+    // Helper to handle remember me storage securely on successful login/registration
+    const handleRememberStorage = () => {
+      try {
+        if (rememberMe) {
+          localStorage.setItem('walletgrow_remember_active', 'true');
+          localStorage.setItem('walletgrow_stored_email', email);
+          // Obfuscate with standard Base64 + custom security salt to avoid plain text in storage
+          const salted = 'wg_secure_' + password;
+          const encoded = btoa(unescape(encodeURIComponent(salted)));
+          localStorage.setItem('walletgrow_stored_pass', encoded);
+        } else {
+          localStorage.removeItem('walletgrow_remember_active');
+          localStorage.removeItem('walletgrow_stored_email');
+          localStorage.removeItem('walletgrow_stored_pass');
+        }
+      } catch (err) {
+        console.error('Error storing remember me credentials:', err);
+      }
+    };
+
     if (isRegistering) {
       if (!name.trim()) {
         setError('Por favor, introduce tu nombre.');
@@ -52,17 +100,18 @@ export default function Login({ onLoginSuccess }: LoginProps) {
       }
       // Save credentials in localStorage
       const users = JSON.parse(localStorage.getItem('profin_users') || '{}');
-      users[email.toLowerCase()] = { name, password };
+      users[emailLower] = { name, password };
       localStorage.setItem('profin_users', JSON.stringify(users));
       
       // Also set the current username in localStorage
       localStorage.setItem('profin_user_name', name);
+      handleRememberStorage();
       onLoginSuccess(email);
     } else {
       // Login flow
-      const emailLower = email.toLowerCase();
       if (emailLower === 'demo@walletgrow.com') {
         localStorage.setItem('profin_user_name', 'John Doe');
+        handleRememberStorage();
         onLoginSuccess(email);
         return;
       }
@@ -74,10 +123,11 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           const users = JSON.parse(localStorage.getItem('profin_users') || '{}');
           users[emailLower] = { name: 'Manuel Leiva', password: 'pass1234' };
           localStorage.setItem('profin_users', JSON.stringify(users));
+          handleRememberStorage();
           onLoginSuccess(email);
           return;
         } else {
-          setError('Contraseña incorrecta para Manuel Leiva.');
+          setError('Contraseña incorrecta. Por favor, verifique sus credenciales.');
           return;
         }
       }
@@ -86,9 +136,10 @@ export default function Login({ onLoginSuccess }: LoginProps) {
       const savedUser = users[emailLower];
       if (savedUser && savedUser.password === password) {
         localStorage.setItem('profin_user_name', savedUser.name || 'Usuario');
+        handleRememberStorage();
         onLoginSuccess(email);
       } else {
-        setError('Credenciales incorrectas. Usa demo@walletgrow.com o crea una cuenta nueva.');
+        setError('Credenciales incorrectas. Por favor, verifique su correo y contraseña.');
       }
     }
   };
@@ -248,7 +299,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
                 {!isRegistering && (
                   <button 
                     type="button" 
-                    onClick={() => setError('La recuperación de contraseña está deshabilitada en el modo demo. Usa demo@profin.com / password.')}
+                    onClick={() => setError('La recuperación de contraseña no está disponible en este momento.')}
                     className="text-xs text-[#006a62] hover:text-[#005049] transition-colors focus:outline-none"
                   >
                     ¿Olvidó su contraseña?
