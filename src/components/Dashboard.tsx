@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Account, Transaction, Goal, CryptoAsset, FixedTermInvestment, Category } from '../types';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
@@ -70,6 +70,8 @@ export default function Dashboard({
   const [direction, setDirection] = useState(1); // 1 = forward (right), -1 = backward (left)
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: any) => {
@@ -105,6 +107,29 @@ export default function Dashboard({
   const handleNext = () => {
     setDirection(1);
     setActiveSlide((prev) => (prev === 4 ? 0 : prev + 1));
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStart === null || touchEnd === null) return;
+    const distance = touchStart - touchEnd;
+    const minSwipeDistance = 50;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe) {
+      handleNext();
+    } else if (isRightSwipe) {
+      handlePrev();
+    }
   };
 
   // 1. Filter expense transactions dynamically based on selected month filter
@@ -840,7 +865,12 @@ export default function Dashboard({
           </button>
 
           {/* Interactive Slide Viewer Window */}
-          <div className="w-full overflow-hidden bg-white border border-[#c4c6ce] rounded-2xl shadow-sm min-h-[460px] p-6 flex flex-col justify-between">
+          <div 
+            className="w-full overflow-hidden bg-white border border-[#c4c6ce] rounded-2xl shadow-sm min-h-[460px] p-6 flex flex-col justify-between touch-pan-y"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             <AnimatePresence initial={false} custom={direction} mode="wait">
               <motion.div
                 key={activeSlide}

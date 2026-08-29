@@ -15,8 +15,8 @@
     }
   ],
   "start_url": "/",
-  "background_color": "#1b2e4b",
-  "theme_color": "#1b2e4b",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "display": "standalone",
   "orientation": "portrait",
   "categories": ["finance", "utilities"],
