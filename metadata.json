@@ -1,0 +1,6 @@
+{
+  "name": "WalletGrow",
+  "description": "Sistema de gestión financiera personal con análisis de gastos, control de presupuestos, metas de ahorro, cartera de inversiones y simulador interactivo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,31 @@
+{
+  "short_name": "WalletGrow",
+  "name": "WalletGrow - Gestión Financiera Inteligente",
+  "description": "Sistema de gestión financiera personal con análisis de gastos, control de presupuestos, metas de ahorro y reportes inteligentes con IA.",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=192&auto=format&fit=crop",
+      "type": "image/jpeg",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=512&auto=format&fit=crop",
+      "type": "image/jpeg",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#1b2e4b",
+  "theme_color": "#1b2e4b",
+  "display": "standalone",
+  "orientation": "portrait",
+  "categories": ["finance", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Añadir Movimiento",
+      "short_name": "Nuevo",
+      "url": "/?action=new-tx",
+      "icons": [{ "src": "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=192&auto=format&fit=crop", "sizes": "192x192" }]
+    }
+  ]
+}
