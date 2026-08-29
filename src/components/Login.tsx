@@ -94,7 +94,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
   };
 
   return (
-    <div id="login_container" className="min-h-screen flex flex-col md:flex-row font-sans bg-[#f7fafc] text-[#181c1e]">
+    <div id="login_container" className="min-h-screen flex flex-col md:flex-row font-sans bg-[#f7fafc] text-[#181c1e] pt-[env(safe-area-inset-top,0px)]">
       
       {/* Banner decorativo - Oculto en móviles, lateral en desktop */}
       <div id="login_banner" className="hidden md:flex md:w-1/2 lg:w-3/5 bg-[#1b2e4b] flex-col items-center justify-center relative overflow-hidden p-12">
