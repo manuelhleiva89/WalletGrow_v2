@@ -1,9 +1,12 @@
 @import "tailwindcss";
 
 @layer base {
-  body {
-    font-family: 'Manrope', 'IBM Plex Sans', sans-serif;
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
     background-color: #f7fafc;
+    font-family: 'Manrope', 'IBM Plex Sans', sans-serif;
     color: #181c1e;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

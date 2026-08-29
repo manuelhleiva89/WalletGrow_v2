@@ -14,6 +14,7 @@ import Pagos from './components/Pagos';
 import Ajustes from './components/Ajustes';
 import TransactionModal from './components/TransactionModal';
 import AppLockScreen from './components/AppLockScreen';
+import WelcomeModal from './components/WelcomeModal';
 
 import {
   INITIAL_PREFERENCES,
@@ -60,6 +61,9 @@ export default function App() {
   // Transaction Modal states
   const [isTxModalOpen, setIsTxModalOpen] = useState(false);
   const [txModalDefaultType, setTxModalDefaultType] = useState<'income' | 'expense' | 'transfer'>('expense');
+
+  // Welcome Modal state
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
   // Check login state on mount
   useEffect(() => {
@@ -194,6 +198,7 @@ export default function App() {
     setUserEmail(emailLower);
     setIsLoggedIn(true);
     setActiveTab('dashboard');
+    setShowWelcomeModal(true);
   };
 
   const handleLogout = () => {
@@ -601,41 +606,43 @@ export default function App() {
   return (
     <div id="app_root" className="min-h-screen bg-[#f7fafc] font-sans flex flex-col">
       {/* Top Header */}
-      <header id="app_header" className="h-16 border-b border-[#e0e3e5] bg-white flex items-center justify-between px-4 md:px-6 sticky top-0 z-40">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="md:hidden p-1.5 text-[#031935] hover:bg-[#f1f4f6] rounded-lg transition-colors focus:outline-none"
-            aria-label="Toggle Sidebar"
-          >
-            <span className="material-symbols-outlined text-[24px]">menu</span>
-          </button>
-          <div className="flex items-center gap-2">
-            <img
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0s2dzudEzRhnFBfSTbJ6CtifGk5oHqwL6rvPCSTjcgx-RYzFus3nQJ_yk1UvC-aSc0Zzd-Qp7LbO1HTrhk5JQxFklUQM8AxpSaTFRNRQEZMSKuVvQZHAEAkjh9Xm7dDtmcTTWkbrfd1HUTqbiYrFSUNXlb-yX99DQ939cF0W_Biaca2_wdWnuJeam7NCuHgSBlI6kRHfwD_wh15hAyp0_YX7qgA8CgTnmc3VYB5gsYZ9noacK5O2aSSWFNo4l-TWwpb4"
-              className="w-8 h-8 rounded-lg object-contain border border-[#e0e3e5]"
-              alt="WalletGrow Logo"
-            />
-            <span className="text-lg font-extrabold text-[#031935] tracking-tight">WalletGrow</span>
+      <header id="app_header" className="sticky top-0 z-40 bg-white border-b border-[#e0e3e5] pt-[env(safe-area-inset-top,0px)]">
+        <div className="h-16 flex items-center justify-between px-4 md:px-6">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="md:hidden p-1.5 text-[#031935] hover:bg-[#f1f4f6] rounded-lg transition-colors focus:outline-none"
+              aria-label="Toggle Sidebar"
+            >
+              <span className="material-symbols-outlined text-[24px]">menu</span>
+            </button>
+            <div className="flex items-center gap-2">
+              <img
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0s2dzudEzRhnFBfSTbJ6CtifGk5oHqwL6rvPCSTjcgx-RYzFus3nQJ_yk1UvC-aSc0Zzd-Qp7LbO1HTrhk5JQxFklUQM8AxpSaTFRNRQEZMSKuVvQZHAEAkjh9Xm7dDtmcTTWkbrfd1HUTqbiYrFSUNXlb-yX99DQ939cF0W_Biaca2_wdWnuJeam7NCuHgSBlI6kRHfwD_wh15hAyp0_YX7qgA8CgTnmc3VYB5gsYZ9noacK5O2aSSWFNo4l-TWwpb4"
+                className="w-8 h-8 rounded-lg object-contain border border-[#e0e3e5]"
+                alt="WalletGrow Logo"
+              />
+              <span className="text-lg font-extrabold text-[#031935] tracking-tight">WalletGrow</span>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-3 md:gap-4">
-          <div className="text-right hidden sm:block">
-            <p className="text-xs font-bold text-[#031935]">{userName}</p>
-            <p className="text-[10px] text-[#75777e]">{userEmail}</p>
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="text-right hidden sm:block">
+              <p className="text-xs font-bold text-[#031935]">{userName}</p>
+              <p className="text-[10px] text-[#75777e]">{userEmail}</p>
+            </div>
+            <div className="w-9 h-9 rounded-full bg-[#1b2e4b] text-[#84f5e8] font-bold flex items-center justify-center text-sm shadow-inner select-none">
+              {userName ? userName.charAt(0).toUpperCase() : 'U'}
+            </div>
+            <button
+              onClick={handleLogout}
+              className="p-2 text-[#75777e] hover:text-[#ba1a1a] hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold focus:outline-none"
+              title="Cerrar Sesión"
+            >
+              <span className="material-symbols-outlined text-[18px]">logout</span>
+              <span className="hidden sm:inline">Cerrar Sesión</span>
+            </button>
           </div>
-          <div className="w-9 h-9 rounded-full bg-[#1b2e4b] text-[#84f5e8] font-bold flex items-center justify-center text-sm shadow-inner select-none">
-            {userName ? userName.charAt(0).toUpperCase() : 'U'}
-          </div>
-          <button
-            onClick={handleLogout}
-            className="p-2 text-[#75777e] hover:text-[#ba1a1a] hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold focus:outline-none"
-            title="Cerrar Sesión"
-          >
-            <span className="material-symbols-outlined text-[18px]">logout</span>
-            <span className="hidden sm:inline">Cerrar Sesión</span>
-          </button>
         </div>
       </header>
 
@@ -645,7 +652,7 @@ export default function App() {
         <aside
           id="app_sidebar"
           className={`
-            fixed md:sticky top-16 left-0 h-[calc(100vh-64px)] w-64 bg-white border-r border-[#e0e3e5] z-30 transition-transform duration-300 flex-shrink-0
+            fixed md:sticky top-[calc(64px+env(safe-area-inset-top,0px))] left-0 h-[calc(100vh-(64px+env(safe-area-inset-top,0px)))] w-64 bg-white border-r border-[#e0e3e5] z-30 transition-transform duration-300 flex-shrink-0
             ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
           `}
         >
@@ -689,7 +696,7 @@ export default function App() {
           <div
             id="sidebar_backdrop"
             onClick={() => setIsSidebarOpen(false)}
-            className="fixed inset-0 top-16 bg-black/25 backdrop-blur-xs z-20 md:hidden transition-opacity"
+            className="fixed inset-0 top-[calc(64px+env(safe-area-inset-top,0px))] bg-black/25 backdrop-blur-xs z-20 md:hidden transition-opacity"
           ></div>
         )}
 
@@ -708,6 +715,14 @@ export default function App() {
         categories={categories}
         onAddTransaction={handleAddTransaction}
         currencySymbol={currencySymbol}
+      />
+
+      {/* Welcome Modal after login */}
+      <WelcomeModal
+        isOpen={showWelcomeModal}
+        onClose={() => setShowWelcomeModal(false)}
+        userName={userName}
+        userEmail={userEmail}
       />
     </div>
   );
