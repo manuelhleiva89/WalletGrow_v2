@@ -12,9 +12,9 @@ interface LoginProps {
 
 export default function Login({ onLoginSuccess }: LoginProps) {
   const [isRegistering, setIsRegistering] = useState(false);
-  const [email, setEmail] = useState('manuel.leiva@walletgrow.com');
-  const [password, setPassword] = useState('pass1234');
-  const [name, setName] = useState('Manuel Leiva');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
